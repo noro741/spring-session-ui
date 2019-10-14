@@ -9,10 +9,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Configuration
 @EnableWebSecurity
+/*@CrossOrigin(origins = {"http://localhost:4200"})*/
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
@@ -21,18 +24,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-      http
-        .httpBasic().and()
-        .csrf()
-        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+      http.csrf().disable()
+        .cors().and()
+        /*.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())*/
+        .httpBasic()
         .and()
         .authorizeRequests()
-        .antMatchers("/index.html","/signup","/login").permitAll()
+        .antMatchers("/signup").permitAll()
         .anyRequest().authenticated()
+        .and().formLogin()
         .and()
-        .formLogin()
-        .and()
-      .logout();
+        .logout();
     }
 
     @Override

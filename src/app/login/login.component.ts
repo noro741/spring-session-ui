@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {AppService} from "../app.service";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Router} from "@angular/router";
 import {Observable} from "rxjs";
 
@@ -18,20 +18,18 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    this.http.post<Observable<boolean>>("http://localhost:8080/login", {
-      username: this.credentials.username,
-      password: this.credentials.password
-    }).subscribe(isValid => {
-      if (isValid) {
-        sessionStorage.setItem(
-          'token',
-          btoa(this.credentials.username + ':' + this.credentials.password)
-        );
-        this.router.navigate(['']);
-      } else {
-        alert("Authentication failed.")
-      }
-    });
+    let headers = new HttpHeaders(
+      {'Content-Type':'application/json',
+        'X-Requested-With':'XMLHttpRequest',
+        'Access-Control-Allow-Origin':'*'}
+    );
+    let options = { headers: headers };
+    this.http.post("http://localhost:8080/login", {username:this.credentials.username,password:this.credentials.password},options).subscribe( res =>{
+        console.log(res);
+      },
+      err => {
+        console.log(err.message);
+      })
   }
 
   ngOnInit() {

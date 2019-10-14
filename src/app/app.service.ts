@@ -13,9 +13,7 @@ export class AppService {
 
   authenticate(credentials, callback) {
 
-    const headers = new HttpHeaders(credentials ? {
-      authorization : 'Basic ' + btoa(credentials.username + ':' + credentials.password)
-    } : {});
+    const headers = new HttpHeaders();
 
     this.http.post('login', {headers: headers}).subscribe(response => {
       if (response['name']) {
