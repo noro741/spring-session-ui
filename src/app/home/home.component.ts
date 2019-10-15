@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {AppService} from "../app.service";
+
 import {HttpClient} from "@angular/common/http";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-home',
@@ -9,11 +10,15 @@ import {HttpClient} from "@angular/common/http";
 })
 export class HomeComponent implements OnInit {
   greeting = {};
-  constructor(private app: AppService, private http: HttpClient) {
-    http.get('resource').subscribe(data => this.greeting = data);
+  constructor(private http: HttpClient, private router: Router) {
+    http.get('http://localhost:8080/').subscribe( res =>{
+        console.log(res);
+      },
+      err => {
+        this.router.navigateByUrl('/login');
+        console.log(err.message);
+      });
   }
-
-  authenticated() { return this.app.authenticated; }
 
 
   ngOnInit() {
