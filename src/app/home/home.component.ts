@@ -10,14 +10,21 @@ import {Router} from "@angular/router";
 })
 export class HomeComponent implements OnInit {
   greeting = {};
-  constructor(private http: HttpClient, private router: Router) {
-    http.get('http://localhost:8080/').subscribe( res =>{
-        console.log(res);
+  resp:any;
+  constructor( private http: HttpClient, private router: Router) {
+
+    http.get('http://localhost:8080/').subscribe(
+      res =>{
+        this.resp = res;
       },
       err => {
-        this.router.navigateByUrl('/login');
+       // this.router.navigateByUrl('/login');
         console.log(err.message);
-      });
+      },
+      () =>{
+        console.log(this.resp);
+      }
+      );
   }
 
 

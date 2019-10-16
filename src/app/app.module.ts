@@ -6,8 +6,10 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { FormsModule } from '@angular/forms';
 import { HomeComponent } from './home/home.component';
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {LoginService} from "./login.service";
+import {SpringbootInterceptor} from "./springboot-interceptor.service";
+import {CookieService} from "ngx-cookie-service";
 
 
 @NgModule({
@@ -22,7 +24,16 @@ import {LoginService} from "./login.service";
     HttpClientModule,
     FormsModule
   ],
-  providers: [LoginService],
+  providers: [LoginService,
+    CookieService,
+    {
+    provide: HTTP_INTERCEPTORS,
+    useClass: SpringbootInterceptor,
+    multi: true
+  }
+
+
+  ],
   bootstrap: [AppComponent]
 })
 

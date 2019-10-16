@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +16,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -33,7 +36,6 @@ import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
-
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -42,20 +44,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-      http.csrf().disable()
+
+      http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+        .and()
         .cors()
         .and()
-        /*.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())*/
-        .httpBasic()
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
         .and()
         .authorizeRequests()
         .antMatchers("/signup").permitAll()
         .anyRequest().authenticated()
         .and()
-        .formLogin().usernameParameter("username").passwordParameter("password").successHandler(successHandler()).failureHandler(failureHandler())
+        .formLogin().successHandler(successHandler())/*.failureHandler(failureHandler())*/
         .and()
         .exceptionHandling()
         .accessDeniedHandler(accessDeniedHandler())
@@ -76,11 +81,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     return new AuthenticationSuccessHandler() {
       @Override
       public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
-        httpServletResponse.getWriter().append("OK");
-        httpServletResponse.setStatus(200);
+
+        //System.out.println("ok");
       }
     };
   }
+
 
   private AuthenticationFailureHandler failureHandler() {
     return new AuthenticationFailureHandler() {
